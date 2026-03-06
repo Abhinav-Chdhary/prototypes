@@ -1,18 +1,25 @@
 import { Colors } from '@/constants/theme';
+import { useStore } from '@/store/useStore';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
 export default function SplashScreen() {
     const router = useRouter();
+    const hasSeenOnboarding = useStore(state => state.hasSeenOnboarding);
+    const passcode = useStore(state => state.passcode);
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            router.replace('/sign-up' as any);
+            if (hasSeenOnboarding && passcode) {
+                router.replace('/passcode-prompt');
+            } else {
+                router.replace('/sign-up' as any);
+            }
         }, 2000); // 2 second mock delay
 
         return () => clearTimeout(timer);
-    }, [router]);
+    }, [router, hasSeenOnboarding, passcode]);
 
     return (
         <View style={styles.container}>
