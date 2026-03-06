@@ -1,4 +1,4 @@
-import GenericError from '@/components/GenericError';
+import GenericError from '@/components/shared/GenericError';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 

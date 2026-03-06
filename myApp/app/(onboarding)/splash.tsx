@@ -1,8 +1,9 @@
-import { Colors } from '@/constants/theme';
 import { useStore } from '@/store/useStore';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
+
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SplashScreen() {
     const router = useRouter();
@@ -22,20 +23,22 @@ export default function SplashScreen() {
     }, [router, hasSeenOnboarding, passcode]);
 
     return (
-        <View style={styles.container}>
+        <LinearGradient
+            colors={['#D0EAEA', '#F6F6EC']}
+            style={styles.container}
+        >
             <Image
                 source={require('@/assets/images/logo.png')}
                 style={styles.logo}
                 resizeMode="contain"
             />
-        </View>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.branding.splashBackground,
         alignItems: 'center',
         justifyContent: 'center',
     },

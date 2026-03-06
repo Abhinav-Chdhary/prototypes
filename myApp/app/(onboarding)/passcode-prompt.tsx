@@ -3,6 +3,8 @@ import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { LinearGradient } from 'expo-linear-gradient';
+
 export default function PasscodePromptScreen() {
     const router = useRouter();
     const storedPasscode = useStore((state) => state.passcode);
@@ -33,7 +35,10 @@ export default function PasscodePromptScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <LinearGradient
+            colors={['#D0EAEA', '#F6F6EC']}
+            style={styles.container}
+        >
             <View style={styles.content}>
                 <Text style={styles.title}>Welcome back!</Text>
 
@@ -63,14 +68,13 @@ export default function PasscodePromptScreen() {
                     {error ? <Text style={styles.errorText}>⚠ {error}</Text> : null}
                 </View>
             </View>
-        </View>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#E8F3F1',
     },
     content: {
         paddingTop: 120, // push down as per design

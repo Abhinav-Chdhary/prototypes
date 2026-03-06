@@ -3,6 +3,8 @@ import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { LinearGradient } from 'expo-linear-gradient';
+
 export default function SetPasscodeScreen() {
     const router = useRouter();
     const { setPasscode, completeOnboarding } = useStore();
@@ -54,74 +56,78 @@ export default function SetPasscodeScreen() {
     const isComplete = passcode.every(v => v !== '') && confirmPasscode.every(v => v !== '');
 
     return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                <Text style={styles.backArrow}>←</Text>
-            </TouchableOpacity>
+        <LinearGradient
+            colors={['#D0EAEA', '#F6F6EC']}
+            style={styles.container}
+        >
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <Text style={styles.backArrow}>←</Text>
+                </TouchableOpacity>
 
-            <Text style={styles.title}>Set Passcode</Text>
+                <Text style={styles.title}>Set Passcode</Text>
 
-            <View style={styles.inputGroup}>
-                <Text style={styles.label}>Enter a 4-Digit Passcode <Text style={styles.required}>*</Text></Text>
-                <Text style={styles.subLabel}>You will need to enter at every app launch</Text>
-                <View style={styles.passcodeContainer}>
-                    {passcode.map((digit, index) => (
-                        <TextInput
-                            key={`passcode-${index}`}
-                            ref={(el) => { passcodeRefs.current[index] = el; }}
-                            style={[styles.digitInput, error ? styles.inputError : null]}
-                            maxLength={1}
-                            keyboardType="numeric"
-                            value={digit}
-                            onChangeText={(text) => handlePasscodeChange(text, index)}
-                            secureTextEntry={false}
-                            placeholder="x"
-                            placeholderTextColor="#CBD5E0"
-                        />
-                    ))}
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Enter a 4-Digit Passcode <Text style={styles.required}>*</Text></Text>
+                    <Text style={styles.subLabel}>You will need to enter at every app launch</Text>
+                    <View style={styles.passcodeContainer}>
+                        {passcode.map((digit, index) => (
+                            <TextInput
+                                key={`passcode-${index}`}
+                                ref={(el) => { passcodeRefs.current[index] = el; }}
+                                style={[styles.digitInput, error ? styles.inputError : null]}
+                                maxLength={1}
+                                keyboardType="numeric"
+                                value={digit}
+                                onChangeText={(text) => handlePasscodeChange(text, index)}
+                                secureTextEntry={false}
+                                placeholder="x"
+                                placeholderTextColor="#CBD5E0"
+                            />
+                        ))}
+                    </View>
                 </View>
-            </View>
 
-            <View style={styles.inputGroup}>
-                <Text style={styles.label}>Confirm Passcode <Text style={styles.required}>*</Text></Text>
-                <View style={styles.passcodeContainer}>
-                    {confirmPasscode.map((digit, index) => (
-                        <TextInput
-                            key={`confirm-${index}`}
-                            ref={(el) => { confirmRefs.current[index] = el; }}
-                            style={[styles.digitInput, error ? styles.inputError : null]}
-                            maxLength={1}
-                            keyboardType="numeric"
-                            value={digit}
-                            onChangeText={(text) => handlePasscodeChange(text, index, true)}
-                            secureTextEntry={false}
-                            placeholder="x"
-                            placeholderTextColor="#CBD5E0"
-                        />
-                    ))}
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Confirm Passcode <Text style={styles.required}>*</Text></Text>
+                    <View style={styles.passcodeContainer}>
+                        {confirmPasscode.map((digit, index) => (
+                            <TextInput
+                                key={`confirm-${index}`}
+                                ref={(el) => { confirmRefs.current[index] = el; }}
+                                style={[styles.digitInput, error ? styles.inputError : null]}
+                                maxLength={1}
+                                keyboardType="numeric"
+                                value={digit}
+                                onChangeText={(text) => handlePasscodeChange(text, index, true)}
+                                secureTextEntry={false}
+                                placeholder="x"
+                                placeholderTextColor="#CBD5E0"
+                            />
+                        ))}
+                    </View>
+                    {error ? <Text style={styles.errorText}>⚠ {error}</Text> : null}
                 </View>
-                {error ? <Text style={styles.errorText}>⚠ {error}</Text> : null}
-            </View>
 
-            <TouchableOpacity
-                style={[styles.button, !isComplete ? styles.buttonDisabled : null]}
-                onPress={handleContinue}
-                disabled={!isComplete}
-            >
-                <Text style={styles.buttonText}>Continue</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.button, !isComplete ? styles.buttonDisabled : null]}
+                    onPress={handleContinue}
+                    disabled={!isComplete}
+                >
+                    <Text style={styles.buttonText}>Continue</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-                <Text style={styles.skipText}>Skip</Text>
-            </TouchableOpacity>
-        </ScrollView>
+                <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+                    <Text style={styles.skipText}>Skip</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#E8F3F1',
     },
     content: {
         paddingTop: 60,

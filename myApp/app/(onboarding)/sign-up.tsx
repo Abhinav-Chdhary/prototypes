@@ -3,6 +3,8 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { LinearGradient } from 'expo-linear-gradient';
+
 export default function SignUpScreen() {
     const router = useRouter();
 
@@ -11,7 +13,10 @@ export default function SignUpScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <LinearGradient
+            colors={['#D0EAEA', '#F6F6EC']}
+            style={styles.container}
+        >
             <View style={styles.content}>
                 <View style={styles.logoContainer}>
                     <View style={styles.logoCircle}>
@@ -36,14 +41,13 @@ export default function SignUpScreen() {
                 style={styles.illustration}
                 resizeMode="contain"
             />
-        </View>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#E8F3F1', // Light teal background
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: 60,
@@ -86,9 +90,9 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: '#1E3A5F', // Dark blue button
         paddingVertical: 16,
-        paddingHorizontal: 32,
+        paddingHorizontal: 20,
         borderRadius: 8,
-        width: '100%',
+        width: 284,
         alignItems: 'center',
     },
     buttonText: {
