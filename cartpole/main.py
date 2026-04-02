@@ -14,10 +14,10 @@ env = gym.make('CartPole-v1', render_mode="human")
 # cart position, cart velocity 
 # pole angle, pole angular velocity
 done = False
-
+truncated = False
 steps = 0
 
-while not done:
+while not (done or truncated):
     steps += 1
     
     action, _ = model.predict(state)
