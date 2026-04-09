@@ -7,7 +7,6 @@ import React, { useEffect } from 'react';
 import {
   Pressable,
   Share,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -29,24 +28,17 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { ConfettiBurst } from './src/components/ConfettiBurst';
+import { THEME } from './src/constants/theme';
+import { styles } from './src/styles/App.styles';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const FINAL_SCORE = 2840;
 const COMBO_STREAK = 7;
 const PLAYER_RANK = 3;
 const TOTAL_PLAYERS = 1200;
 
-const THEME = {
-  backgroundDark: '#1a1a1a',
-  primaryGreen: '#a9f99e',
-  primaryGreen2: '#b1fa63',
-  textLight: '#fff',
-  textGray: '#bababa',
-  textGray2: '#a2a2a2',
-  fontMontserrat: 'Montserrat_500Medium',
-  fontNunito: 'NunitoSans_400Regular',
-} as const;
 
 function formatScore(value: number) {
   'worklet';
@@ -376,6 +368,7 @@ export default function App() {
   }
 
   return (
+    /* Main Screen Container with deep background gradient */
     <LinearGradient
       colors={[THEME.backgroundDark, THEME.backgroundDark]}
       start={{ x: 0.1, y: 0 }}
@@ -384,6 +377,7 @@ export default function App() {
     >
       <StatusBar style="dark" />
 
+      {/* Decorative Background Glows - Top Left */}
       <Animated.View
         pointerEvents="none"
         style={[
@@ -398,6 +392,8 @@ export default function App() {
           },
         ]}
       />
+
+      {/* Decorative Background Glows - Bottom Right */}
       <Animated.View
         pointerEvents="none"
         style={[
@@ -414,18 +410,17 @@ export default function App() {
         ]}
       />
 
+      {/* Celebration Confetti burst animation */}
       <ConfettiBurst progress={confettiProgress} width={width} height={height} />
 
-      <View style={styles.chrome} pointerEvents="none">
-        <View style={styles.gridLine} />
-        <View style={[styles.gridLine, styles.gridLineOffset]} />
-      </View>
-
+      {/* Utility Replay Button to restart the reveal animation */}
       <Pressable onPress={replayReveal} style={styles.replayButton}>
         <Text style={styles.replayButtonText}>Replay</Text>
       </Pressable>
 
+      {/* Main Content Shell - Animates in from bottom with opacity */}
       <Animated.View style={[styles.shell, shellStyle]}>
+        {/* Title and Subtitle Block */}
         <View style={styles.headerBlock}>
           <Text style={styles.kicker}>MATIKS DUEL COMPLETE</Text>
           <Text style={[styles.title, compactLayout && styles.titleCompact]}>Victory Locked In</Text>
@@ -434,14 +429,16 @@ export default function App() {
           </Text>
         </View>
 
+        {/* Animated Score Card - Tilts and scales as score counts up */}
         <Animated.View style={[styles.scoreCard, scoreCardStyle]}>
           <LinearGradient
-            colors={['rgba(255, 255, 255, 0.98)', 'rgba(169, 249, 158, 0.18)']}
+            colors={[THEME.backgroundDark, THEME.primaryPurple]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.scoreCardGradient}
           >
             <Text style={styles.scoreLabel}>Final Score</Text>
+            {/* AnimatedTextInput used for counting number effect */}
             <AnimatedTextInput
               animatedProps={animatedScoreProps}
               caretHidden
@@ -455,11 +452,13 @@ export default function App() {
           </LinearGradient>
         </Animated.View>
 
+        {/* Combo Badge with animated flame Emoji */}
         <Animated.View style={[styles.comboBadge, badgeStyle]}>
           <Animated.Text style={[styles.comboFlame, flameStyle]}>🔥</Animated.Text>
           <Text style={styles.comboText}>{COMBO_STREAK} Combo Streak!</Text>
         </Animated.View>
 
+        {/* Final Ranking/Placement Card */}
         <Animated.View style={[styles.rankCard, rankStyle]}>
           <Text style={styles.rankLabel}>Placement</Text>
           <Text style={styles.rankValue}>
@@ -467,6 +466,7 @@ export default function App() {
           </Text>
         </Animated.View>
 
+        {/* Share Result Button with shimmer effect */}
         <Animated.View style={[styles.shareWrap, buttonStyle]}>
           <Pressable onPress={handleShare} style={styles.shareHitbox}>
             <LinearGradient
@@ -475,7 +475,14 @@ export default function App() {
               end={{ x: 1, y: 1 }}
               style={styles.shareButton}
             >
-              <Animated.View pointerEvents="none" style={[styles.shimmer, shimmerStyle]} />
+              {/* Shimmer Overlay - Moves horizontally across the button */}
+              <AnimatedLinearGradient
+                colors={['transparent', THEME.backgroundLight, 'transparent']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                pointerEvents="none"
+                style={[styles.shimmer, shimmerStyle]}
+              />
               <Text style={styles.shareText}>Share Result</Text>
             </LinearGradient>
           </Pressable>
@@ -484,215 +491,3 @@ export default function App() {
     </LinearGradient>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: THEME.backgroundDark,
-  },
-  chrome: {
-    ...StyleSheet.absoluteFillObject,
-    opacity: 0.4,
-  },
-  gridLine: {
-    position: 'absolute',
-    top: '18%',
-    left: '-25%',
-    width: '150%',
-    height: 1,
-    backgroundColor: 'rgba(162, 162, 162, 0.22)',
-    transform: [{ rotate: '-14deg' }],
-  },
-  gridLineOffset: {
-    top: '62%',
-    left: '-10%',
-  },
-  backGlow: {
-    position: 'absolute',
-    borderRadius: 999,
-  },
-  replayButton: {
-    position: 'absolute',
-    top: 58,
-    left: 20,
-    zIndex: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255, 255, 255, 0.96)',
-    borderWidth: 1,
-    borderColor: 'rgba(169, 249, 158, 0.8)',
-  },
-  replayButtonText: {
-    color: THEME.textGray2,
-    fontSize: 14,
-    fontFamily: THEME.fontMontserrat,
-    letterSpacing: 0.3,
-  },
-  shell: {
-    width: '100%',
-    maxWidth: 420,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-  },
-  headerBlock: {
-    gap: 10,
-    alignItems: 'center',
-    marginBottom: 28,
-  },
-  kicker: {
-    color: THEME.textGray,
-    fontSize: 12,
-    fontFamily: THEME.fontMontserrat,
-    letterSpacing: 2.4,
-  },
-  title: {
-    color: THEME.textGray2,
-    fontSize: 38,
-    fontFamily: THEME.fontMontserrat,
-    textAlign: 'center',
-    letterSpacing: -1.2,
-  },
-  titleCompact: {
-    fontSize: 34,
-  },
-  subtitle: {
-    color: THEME.textGray,
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: THEME.fontNunito,
-    textAlign: 'center',
-    maxWidth: 320,
-  },
-  subtitleCompact: {
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  scoreCard: {
-    width: '100%',
-    borderRadius: 30,
-    overflow: 'hidden',
-    shadowColor: THEME.primaryGreen,
-    shadowOpacity: 0.24,
-    shadowRadius: 28,
-    shadowOffset: {
-      width: 0,
-      height: 20,
-    },
-    elevation: 14,
-    backgroundColor: THEME.backgroundDark,
-  },
-  scoreCardGradient: {
-    paddingVertical: 30,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(177, 250, 99, 0.9)',
-    backgroundColor: 'rgba(169, 249, 158, 0.16)',
-  },
-  scoreLabel: {
-    color: THEME.textGray,
-    fontSize: 13,
-    fontFamily: THEME.fontMontserrat,
-    letterSpacing: 1.8,
-    textTransform: 'uppercase',
-  },
-  scoreValue: {
-    marginTop: 10,
-    color: THEME.textLight,
-    fontSize: 64,
-    fontFamily: THEME.fontMontserrat,
-    letterSpacing: -2.6,
-    textAlign: 'center',
-    minWidth: '100%',
-  },
-  scoreValueCompact: {
-    fontSize: 56,
-  },
-  scoreHint: {
-    marginTop: 8,
-    color: THEME.textGray,
-    fontSize: 14,
-    fontFamily: THEME.fontNunito,
-  },
-  comboBadge: {
-    marginTop: 22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 999,
-    backgroundColor: 'rgba(169, 249, 158, 0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(177, 250, 99, 0.92)',
-  },
-  comboFlame: {
-    fontSize: 20,
-  },
-  comboText: {
-    color: THEME.textGray2,
-    fontSize: 18,
-    fontFamily: THEME.fontNunito,
-    letterSpacing: 0.2,
-  },
-  rankCard: {
-    width: '100%',
-    marginTop: 20,
-    paddingHorizontal: 22,
-    paddingVertical: 18,
-    borderRadius: 22,
-    backgroundColor: THEME.backgroundDark,
-    borderWidth: 1,
-    borderColor: 'rgba(169, 249, 158, 0.72)',
-  },
-  rankLabel: {
-    color: THEME.textGray,
-    fontSize: 13,
-    fontFamily: THEME.fontMontserrat,
-    letterSpacing: 1.6,
-    textTransform: 'uppercase',
-  },
-  rankValue: {
-    marginTop: 8,
-    color: THEME.textGray2,
-    fontSize: 32,
-    fontFamily: THEME.fontMontserrat,
-    letterSpacing: -0.8,
-  },
-  rankMeta: {
-    color: THEME.textGray,
-    fontSize: 24,
-    fontFamily: THEME.fontNunito,
-  },
-  shareWrap: {
-    width: '100%',
-    marginTop: 22,
-  },
-  shareHitbox: {
-    borderRadius: 22,
-    overflow: 'hidden',
-  },
-  shareButton: {
-    paddingVertical: 18,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  shimmer: {
-    position: 'absolute',
-    top: -20,
-    bottom: -20,
-    width: 66,
-    backgroundColor: 'rgba(255, 255, 255, 0.58)',
-  },
-  shareText: {
-    color: THEME.textGray2,
-    fontSize: 18,
-    fontFamily: THEME.fontMontserrat,
-    letterSpacing: 0.2,
-  },
-});
