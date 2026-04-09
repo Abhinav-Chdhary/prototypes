@@ -1,5 +1,8 @@
-import { StatusBar } from 'expo-status-bar';
+import { Montserrat_500Medium } from '@expo-google-fonts/montserrat';
+import { NunitoSans_400Regular } from '@expo-google-fonts/nunito-sans';
+import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import {
   Pressable,
@@ -34,6 +37,17 @@ const COMBO_STREAK = 7;
 const PLAYER_RANK = 3;
 const TOTAL_PLAYERS = 1200;
 
+const THEME = {
+  backgroundDark: '#1a1a1a',
+  primaryGreen: '#a9f99e',
+  primaryGreen2: '#b1fa63',
+  textLight: '#fff',
+  textGray: '#bababa',
+  textGray2: '#a2a2a2',
+  fontMontserrat: 'Montserrat_500Medium',
+  fontNunito: 'NunitoSans_400Regular',
+} as const;
+
 function formatScore(value: number) {
   'worklet';
 
@@ -55,6 +69,10 @@ function formatScore(value: number) {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Montserrat_500Medium,
+    NunitoSans_400Regular,
+  });
   const { width, height } = useWindowDimensions();
   const compactLayout = width < 390;
 
@@ -186,7 +204,11 @@ export default function App() {
 
     flameOpacity.value = withDelay(
       700,
-      withRepeat(withSequence(withTiming(1, { duration: 650 }), withTiming(0.64, { duration: 650 })), -1, true),
+      withRepeat(
+        withSequence(withTiming(1, { duration: 650 }), withTiming(0.64, { duration: 650 })),
+        -1,
+        true,
+      ),
     );
 
     shimmerProgress.value = withRepeat(
@@ -264,8 +286,10 @@ export default function App() {
   };
 
   useEffect(() => {
-    replayReveal();
-  }, []);
+    if (fontsLoaded) {
+      replayReveal();
+    }
+  }, [fontsLoaded]);
 
   const shellStyle = useAnimatedStyle(() => ({
     opacity: shellOpacity.value,
@@ -315,7 +339,7 @@ export default function App() {
       { translateX: interpolate(shimmerProgress.value, [0, 1], [-240, 260], Extrapolation.CLAMP) },
       { skewX: '-20deg' },
     ],
-    opacity: 0.88,
+    opacity: 0.82,
   }));
 
   const animatedScoreProps = useAnimatedProps(() => {
@@ -340,16 +364,25 @@ export default function App() {
 
     try {
       await Share.share({
-        message: `I just scored ${FINAL_SCORE.toLocaleString()} in Matiks, hit a ${COMBO_STREAK} combo streak, and finished #${PLAYER_RANK} of ${TOTAL_PLAYERS.toLocaleString()}.`,
+        message: `I just scored ${FINAL_SCORE.toLocaleString()} on Matiks, hit a ${COMBO_STREAK} combo streak, and finished #${PLAYER_RANK} of ${TOTAL_PLAYERS.toLocaleString()}.`,
       });
     } catch {
       // Ignore user-cancelled share flows.
     }
   };
 
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <LinearGradient colors={['#060816', '#0A1630', '#160D2B']} start={{ x: 0.1, y: 0 }} end={{ x: 0.95, y: 1 }} style={styles.screen}>
-      <StatusBar style="light" />
+    <LinearGradient
+      colors={[THEME.backgroundDark, THEME.backgroundDark]}
+      start={{ x: 0.1, y: 0 }}
+      end={{ x: 0.95, y: 1 }}
+      style={styles.screen}
+    >
+      <StatusBar style="dark" />
 
       <Animated.View
         pointerEvents="none"
@@ -361,7 +394,7 @@ export default function App() {
             height: width * 0.72,
             top: height * 0.06,
             left: -width * 0.12,
-            backgroundColor: 'rgba(56, 211, 255, 0.18)',
+            backgroundColor: 'rgba(169, 249, 158, 0.3)',
           },
         ]}
       />
@@ -374,8 +407,8 @@ export default function App() {
             height: width * 0.8,
             bottom: -width * 0.25,
             right: -width * 0.1,
-            backgroundColor: 'rgba(255, 79, 145, 0.12)',
-            opacity: 0.8,
+            backgroundColor: 'rgba(177, 250, 99, 0.22)',
+            opacity: 0.72,
             transform: [{ rotate: '18deg' }],
           },
         ]}
@@ -403,7 +436,7 @@ export default function App() {
 
         <Animated.View style={[styles.scoreCard, scoreCardStyle]}>
           <LinearGradient
-            colors={['rgba(33, 57, 98, 0.92)', 'rgba(16, 25, 50, 0.92)']}
+            colors={['rgba(255, 255, 255, 0.98)', 'rgba(169, 249, 158, 0.18)']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.scoreCardGradient}
@@ -437,7 +470,7 @@ export default function App() {
         <Animated.View style={[styles.shareWrap, buttonStyle]}>
           <Pressable onPress={handleShare} style={styles.shareHitbox}>
             <LinearGradient
-              colors={['#7EF0FF', '#4CA7FF', '#8E6DFF']}
+              colors={[THEME.primaryGreen, THEME.primaryGreen2]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.shareButton}
@@ -457,11 +490,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#050816',
+    backgroundColor: THEME.backgroundDark,
   },
   chrome: {
     ...StyleSheet.absoluteFillObject,
-    opacity: 0.34,
+    opacity: 0.4,
   },
   gridLine: {
     position: 'absolute',
@@ -469,7 +502,7 @@ const styles = StyleSheet.create({
     left: '-25%',
     width: '150%',
     height: 1,
-    backgroundColor: 'rgba(125, 181, 255, 0.16)',
+    backgroundColor: 'rgba(162, 162, 162, 0.22)',
     transform: [{ rotate: '-14deg' }],
   },
   gridLineOffset: {
@@ -488,14 +521,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 999,
-    backgroundColor: 'rgba(9, 17, 36, 0.74)',
+    backgroundColor: 'rgba(255, 255, 255, 0.96)',
     borderWidth: 1,
-    borderColor: 'rgba(149, 196, 255, 0.24)',
+    borderColor: 'rgba(169, 249, 158, 0.8)',
   },
   replayButtonText: {
-    color: '#E8F4FF',
+    color: THEME.textGray2,
     fontSize: 14,
-    fontWeight: '800',
+    fontFamily: THEME.fontMontserrat,
     letterSpacing: 0.3,
   },
   shell: {
@@ -510,15 +543,15 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   kicker: {
-    color: '#7ACEFF',
+    color: THEME.textGray,
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: THEME.fontMontserrat,
     letterSpacing: 2.4,
   },
   title: {
-    color: '#F7FBFF',
+    color: THEME.textGray2,
     fontSize: 38,
-    fontWeight: '900',
+    fontFamily: THEME.fontMontserrat,
     textAlign: 'center',
     letterSpacing: -1.2,
   },
@@ -526,9 +559,10 @@ const styles = StyleSheet.create({
     fontSize: 34,
   },
   subtitle: {
-    color: 'rgba(225, 236, 255, 0.78)',
+    color: THEME.textGray,
     fontSize: 16,
     lineHeight: 24,
+    fontFamily: THEME.fontNunito,
     textAlign: 'center',
     maxWidth: 320,
   },
@@ -540,34 +574,36 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 30,
     overflow: 'hidden',
-    shadowColor: '#6CCBFF',
-    shadowOpacity: 0.34,
+    shadowColor: THEME.primaryGreen,
+    shadowOpacity: 0.24,
     shadowRadius: 28,
     shadowOffset: {
       width: 0,
       height: 20,
     },
-    elevation: 16,
+    elevation: 14,
+    backgroundColor: THEME.backgroundDark,
   },
   scoreCardGradient: {
     paddingVertical: 30,
     paddingHorizontal: 24,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(136, 182, 255, 0.18)',
+    borderColor: 'rgba(177, 250, 99, 0.9)',
+    backgroundColor: 'rgba(169, 249, 158, 0.16)',
   },
   scoreLabel: {
-    color: 'rgba(201, 220, 255, 0.78)',
+    color: THEME.textGray,
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: THEME.fontMontserrat,
     letterSpacing: 1.8,
     textTransform: 'uppercase',
   },
   scoreValue: {
     marginTop: 10,
-    color: '#FFFFFF',
+    color: THEME.textLight,
     fontSize: 64,
-    fontWeight: '900',
+    fontFamily: THEME.fontMontserrat,
     letterSpacing: -2.6,
     textAlign: 'center',
     minWidth: '100%',
@@ -577,9 +613,9 @@ const styles = StyleSheet.create({
   },
   scoreHint: {
     marginTop: 8,
-    color: 'rgba(194, 212, 255, 0.68)',
+    color: THEME.textGray,
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: THEME.fontNunito,
   },
   comboBadge: {
     marginTop: 22,
@@ -589,17 +625,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 12,
     borderRadius: 999,
-    backgroundColor: 'rgba(255, 132, 64, 0.16)',
+    backgroundColor: 'rgba(169, 249, 158, 0.18)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 174, 108, 0.28)',
+    borderColor: 'rgba(177, 250, 99, 0.92)',
   },
   comboFlame: {
     fontSize: 20,
   },
   comboText: {
-    color: '#FFF3E8',
+    color: THEME.textGray2,
     fontSize: 18,
-    fontWeight: '800',
+    fontFamily: THEME.fontNunito,
     letterSpacing: 0.2,
   },
   rankCard: {
@@ -608,28 +644,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     paddingVertical: 18,
     borderRadius: 22,
-    backgroundColor: 'rgba(11, 19, 39, 0.78)',
+    backgroundColor: THEME.backgroundDark,
     borderWidth: 1,
-    borderColor: 'rgba(131, 173, 255, 0.16)',
+    borderColor: 'rgba(169, 249, 158, 0.72)',
   },
   rankLabel: {
-    color: 'rgba(191, 212, 255, 0.7)',
+    color: THEME.textGray,
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: THEME.fontMontserrat,
     letterSpacing: 1.6,
     textTransform: 'uppercase',
   },
   rankValue: {
     marginTop: 8,
-    color: '#F8FBFF',
+    color: THEME.textGray2,
     fontSize: 32,
-    fontWeight: '900',
+    fontFamily: THEME.fontMontserrat,
     letterSpacing: -0.8,
   },
   rankMeta: {
-    color: 'rgba(198, 218, 255, 0.78)',
+    color: THEME.textGray,
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: THEME.fontNunito,
   },
   shareWrap: {
     width: '100%',
@@ -651,12 +687,12 @@ const styles = StyleSheet.create({
     top: -20,
     bottom: -20,
     width: 66,
-    backgroundColor: 'rgba(255, 255, 255, 0.42)',
+    backgroundColor: 'rgba(255, 255, 255, 0.58)',
   },
   shareText: {
-    color: '#07111F',
+    color: THEME.textGray2,
     fontSize: 18,
-    fontWeight: '900',
+    fontFamily: THEME.fontMontserrat,
     letterSpacing: 0.2,
   },
 });
