@@ -1,0 +1,22 @@
+{
+  "name": "mri-test-reporting-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Prototype backend for a chained radiology reporting pipeline.",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "@langchain/core": "^1.0.7",
+    "@langchain/openai": "^1.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
