@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, SafeAreaView } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAlarms } from '../../src/store/AlarmContext';
 import { AlarmCard } from '../../src/components/02_molecules/AlarmCard';
 import { Button } from '../../src/components/01_atoms/Button';

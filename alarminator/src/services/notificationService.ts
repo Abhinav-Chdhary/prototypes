@@ -1,69 +1,49 @@
-import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
+import { Platform, Alert } from 'react-native';
 import { Alarm } from '../types';
 import { addDays, isBefore } from 'date-fns';
+import { router } from 'expo-router';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  } as any),
-});
+// MOCKING expo-notifications for Expo Go compatibility in SDK 53+
+// Real push notifications require a development build (`npx expo run:android` / `npx expo run:ios`)
+const activeTimers: Record<string, NodeJS.Timeout> = {};
 
 export const requestPermissionsAsync = async () => {
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('alarms', {
-      name: 'Alarms',
-      importance: Notifications.AndroidImportance.HIGH,
-      sound: 'default',
-    });
-  }
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-  if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
-  return finalStatus === 'granted';
+  console.log('[Mock] Requested notification permissions.');
+  return true;
 };
 
 export const scheduleAlarmNotification = async (alarm: Alarm) => {
   let triggerTime = alarm.time;
-  
-  // If the time is in the past, schedule for tomorrow
   if (isBefore(triggerTime, new Date())) {
     triggerTime = addDays(triggerTime, 1);
   }
 
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: 'Time to wake up!',
-      body: alarm.label || 'Complete your task to dismiss.',
-      data: { alarmId: alarm.id, task: alarm.task },
-      sound: 'default', // Using default sound for now
-    },
-    trigger: triggerTime as any, // For Expo SDK 50+, Date works. Or we can use { type: 'date', timestamp: triggerTime.getTime() } in older versions, but Date is fine.
-    identifier: alarm.id, // Use alarm ID as identifier so we can cancel it easily
-  });
+  const delay = triggerTime.getTime() - Date.now();
+  console.log(`[Mock] Alarm scheduled in ${Math.round(delay / 1000)} seconds.`);
+
+  if (activeTimers[alarm.id]) clearTimeout(activeTimers[alarm.id]);
+  
+  // Only works if app is foregrounded!
+  activeTimers[alarm.id] = setTimeout(() => {
+    router.push(`/alarm-active?alarmId=${alarm.id}&task=${encodeURIComponent(alarm.task || '')}`);
+  }, delay);
 };
 
 export const cancelAlarmNotification = async (alarmId: string) => {
-  await Notifications.cancelScheduledNotificationAsync(alarmId);
+  console.log(`[Mock] Alarm ${alarmId} cancelled.`);
+  if (activeTimers[alarmId]) {
+    clearTimeout(activeTimers[alarmId]);
+    delete activeTimers[alarmId];
+  }
 };
 
 export const snoozeAlarm = async (alarmId: string, minutes: number = 5) => {
-  const snoozeTime = new Date();
-  snoozeTime.setMinutes(snoozeTime.getMinutes() + minutes);
-  
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: 'Snooze is over!',
-      body: 'Time to get up for real.',
-      data: { alarmId: alarmId },
-      sound: 'default',
-    },
-    trigger: snoozeTime as any,
-    identifier: `${alarmId}_snooze`,
-  });
+  console.log(`[Mock] Alarm ${alarmId} snoozed for ${minutes} minutes.`);
+  const delay = minutes * 60 * 1000;
+
+  if (activeTimers[alarmId]) clearTimeout(activeTimers[alarmId]);
+
+  activeTimers[alarmId] = setTimeout(() => {
+    router.push(`/alarm-active?alarmId=${alarmId}&task=SnoozeEnded`);
+  }, delay);
 };
