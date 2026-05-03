@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Text } from '../src/components/01_atoms/Text';
 import { Button } from '../src/components/01_atoms/Button';
 import { theme } from '../src/theme';
-import { snoozeAlarm, cancelAlarmNotification } from '../src/services/notificationService';
+import { snoozeAlarm, clearSnoozeNotification } from '../src/services/notificationService';
 
 export default function AlarmActiveScreen() {
   const { alarmId, task } = useLocalSearchParams<{ alarmId: string, task: string }>();
@@ -20,21 +20,26 @@ export default function AlarmActiveScreen() {
     router.back();
   };
 
-  const handleDismiss = () => {
+  const handleDismiss = async () => {
     // Phase 1: Direct dismissal (for testing)
     // Later: Navigate to puzzle screen
     if (alarmId) {
-       cancelAlarmNotification(alarmId);
+       await clearSnoozeNotification(alarmId);
     }
     // We'll navigate to the first puzzle task here later.
     Alert.alert('Task', `You need to: ${decodeURIComponent(task || 'Do the puzzle')}\n\n(Puzzle UI not implemented yet. Dismissing alarm.)`);
     router.back();
   };
 
-  const adjustSnooze = (amount: number) => {
+  const adjustSnooze = (increment: boolean) => {
     setSnoozeMinutes(prev => {
-      const newMins = prev + amount;
-      return newMins < 1 ? 1 : newMins; // Minimum 1 min
+      if (increment) {
+        if (prev >= 5) return prev + 5;
+        return prev + 1;
+      } else {
+        if (prev > 5) return prev - 5;
+        return Math.max(1, prev - 1);
+      }
     });
   };
 
@@ -51,9 +56,9 @@ export default function AlarmActiveScreen() {
         <View style={styles.snoozeContainer}>
           <Text variant="h2" align="center" style={styles.snoozeLabel}>Snooze</Text>
           <View style={styles.snoozeControls}>
-            <Button title="-" variant="outline" onPress={() => adjustSnooze(-5)} style={styles.roundBtn} />
+            <Button title="-" variant="outline" onPress={() => adjustSnooze(false)} style={styles.roundBtn} />
             <Text variant="h1" style={styles.snoozeTime}>{snoozeMinutes} m</Text>
-            <Button title="+" variant="outline" onPress={() => adjustSnooze(5)} style={styles.roundBtn} />
+            <Button title="+" variant="outline" onPress={() => adjustSnooze(true)} style={styles.roundBtn} />
           </View>
           <Button title="Snooze Alarm" onPress={handleSnooze} variant="secondary" style={styles.snoozeBtn} />
         </View>

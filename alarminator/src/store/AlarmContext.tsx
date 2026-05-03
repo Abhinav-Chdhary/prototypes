@@ -17,7 +17,7 @@ export const AlarmProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [alarms, setAlarms] = useState<Alarm[]>([]);
 
   const loadAlarms = async () => {
-    const loaded = await alarmStorage.getAlarms();
+    const loaded = await alarmStorage.reconcileStoredAlarmSchedules();
     setAlarms(loaded);
   };
 

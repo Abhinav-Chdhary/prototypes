@@ -5,4 +5,6 @@ export interface Alarm {
   label: string;
   task: string;
   repeatDays?: number[]; // 0 = Sun, 1 = Mon, etc.
+  notificationIds?: string[];
+  snoozeNotificationId?: string;
 }

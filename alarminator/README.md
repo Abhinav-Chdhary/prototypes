@@ -25,6 +25,42 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
+## EAS Development Builds
+
+Use these commands to create and manage development builds.
+
+1. Install EAS CLI (one-time)
+
+   ```bash
+   npm install -g eas-cli
+   ```
+
+2. Log in and link/configure project (one-time per machine/project)
+
+   ```bash
+   eas login
+   eas init
+   eas build:configure
+   ```
+
+3. Start Android development build
+
+   ```bash
+   eas build --profile development --platform android
+   ```
+
+4. Start iOS development build
+
+   ```bash
+   eas build --profile development --platform ios
+   ```
+
+5. Cancel an in-progress build
+
+   ```bash
+   eas build:cancel --id <BUILD_ID>
+   ```
+
 ## Get a fresh project
 
 When you're ready, run:

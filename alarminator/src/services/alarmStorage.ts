@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alarm } from '../types';
 import uuid from 'react-native-uuid';
-import { scheduleAlarmNotification, cancelAlarmNotification } from './notificationService';
+import { scheduleAlarmNotification, cancelAlarmNotification, reconcileAlarmSchedules } from './notificationService';
 
 const ALARMS_STORAGE_KEY = '@alarminator_alarms';
 
@@ -34,16 +34,20 @@ export const saveAlarms = async (alarms: Alarm[]) => {
 
 export const addAlarm = async (time: Date, label: string = 'Alarm', task: string = 'math'): Promise<Alarm> => {
   const alarms = await getAlarms();
+  const alarmId = uuid.v4().toString();
   const newAlarm: Alarm = {
-    id: uuid.v4().toString(),
+    id: alarmId,
     time,
     isEnabled: true,
     label,
     task,
+    notificationIds: [],
+    snoozeNotificationId: `alarm-snooze-${alarmId}`,
   };
+  const notificationIds = await scheduleAlarmNotification(newAlarm);
+  newAlarm.notificationIds = notificationIds;
   alarms.push(newAlarm);
   await saveAlarms(alarms);
-  await scheduleAlarmNotification(newAlarm);
   return newAlarm;
 };
 
@@ -51,23 +55,30 @@ export const updateAlarm = async (updatedAlarm: Alarm): Promise<Alarm[]> => {
   const alarms = await getAlarms();
   const index = alarms.findIndex(a => a.id === updatedAlarm.id);
   if (index > -1) {
+    const previousNotificationIds = alarms[index].notificationIds;
     alarms[index] = updatedAlarm;
-    await saveAlarms(alarms);
     
     // Reschedule
-    await cancelAlarmNotification(updatedAlarm.id);
+    await cancelAlarmNotification(updatedAlarm.id, previousNotificationIds);
     if (updatedAlarm.isEnabled) {
-      await scheduleAlarmNotification(updatedAlarm);
+      const notificationIds = await scheduleAlarmNotification(updatedAlarm);
+      alarms[index].notificationIds = notificationIds;
+      alarms[index].snoozeNotificationId = `alarm-snooze-${updatedAlarm.id}`;
+    } else {
+      alarms[index].notificationIds = [];
+      alarms[index].snoozeNotificationId = undefined;
     }
+    await saveAlarms(alarms);
   }
   return alarms;
 };
 
 export const deleteAlarm = async (id: string): Promise<Alarm[]> => {
   const alarms = await getAlarms();
+  const alarmToDelete = alarms.find((alarm) => alarm.id === id);
   const filtered = alarms.filter(a => a.id !== id);
   await saveAlarms(filtered);
-  await cancelAlarmNotification(id);
+  await cancelAlarmNotification(id, alarmToDelete?.notificationIds);
   return filtered;
 };
 
@@ -79,10 +90,25 @@ export const toggleAlarm = async (id: string, isEnabled: boolean): Promise<Alarm
     await saveAlarms(alarms);
     
     if (isEnabled) {
-      await scheduleAlarmNotification(alarms[index]);
+      const notificationIds = await scheduleAlarmNotification(alarms[index]);
+      alarms[index].notificationIds = notificationIds;
+      alarms[index].snoozeNotificationId = `alarm-snooze-${alarms[index].id}`;
+      await saveAlarms(alarms);
     } else {
-      await cancelAlarmNotification(id);
+      await cancelAlarmNotification(id, alarms[index].notificationIds);
+      alarms[index].notificationIds = [];
+      alarms[index].snoozeNotificationId = undefined;
+      await saveAlarms(alarms);
     }
   }
   return alarms;
+};
+
+export const reconcileStoredAlarmSchedules = async (): Promise<Alarm[]> => {
+  const alarms = await getAlarms();
+  const { alarms: reconciled, didChange } = await reconcileAlarmSchedules(alarms);
+  if (didChange) {
+    await saveAlarms(reconciled);
+  }
+  return reconciled;
 };

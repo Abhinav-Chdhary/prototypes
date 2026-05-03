@@ -11,6 +11,7 @@ Core promise:
 ## Current Project Snapshot
 - Stack: Expo + React Native + TypeScript + Expo Router.
 - Alarm scheduling and storage already exist.
+- Alarm scheduling now uses `expo-notifications` with persisted notification IDs and startup reconciliation.
 - Notification tap/receive navigation into `app/alarm-active.tsx` is implemented.
 - Puzzle enforcement is not implemented yet (dismiss flow is currently a placeholder).
 
@@ -91,10 +92,17 @@ Run at minimum:
 - `npm run lint`
 - Manual device/simulator verification of one full ring -> solve -> dismiss cycle.
 
+## Workflow Rules (Mandatory)
+Every agent interacting with this repo MUST follow these workflow rules:
+1. **Plan first**: Before making changes, create/update a plan in `Plans/` (e.g., `Plans/plan_feature_name.md`).
+2. **Session Reports**: At the end of every session, append a summary of work done to `Reports/session_reports.md` (or create a new one if it's a major milestone).
+3. **Traceability**: All major decisions and changed files should be logged in the session report.
+
 ## Collaboration Notes for Agents
-- Make focused changes; avoid broad refactors unless required by the feature.
-- Update this file when introducing a new subsystem or changing core flow.
-- If you add new puzzle categories, document:
+- **Follow Workflow Rules**: Strictly adhere to the `Plans/` and `Reports/` requirements above.
+- **Focused Changes**: Make focused changes; avoid broad refactors unless required by the feature.
+- **Update Documentation**: Update this file when introducing a new subsystem or changing core flow.
+- **Puzzle Documentation**: If you add new puzzle categories, document:
   - required input type,
   - validation strategy,
   - anti-bypass considerations,

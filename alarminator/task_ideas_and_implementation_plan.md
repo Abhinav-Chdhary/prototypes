@@ -47,3 +47,5 @@ These are overarching features that tie the app together, also ordered roughly b
 3. **Streak Penalty:** Deduct points or reset the streak if the user fails or forces a skip.
 4. **QR Code in Bathroom/Kitchen:** Requires camera permissions, a QR scanning library, and users to print out a QR code. Highly effective but higher friction to build and set up.
 5. **Require Camera / Mic / Motion:** Requires deep device integration, permissions handling, and potentially complex validation (e.g., "take a picture of something blue" or "yell 'I am awake'").
+6. **Make app smarter:** Understand if users are awake and if they are, show them a notification to turn off the alarm for today.
+7. **haptic feedback:** when setting time for alarm

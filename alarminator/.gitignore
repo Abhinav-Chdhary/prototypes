@@ -42,6 +42,7 @@ app-example
 /ios
 /android
 
-# planning and session artifacts
+# planning and session artifacts for AI agents
 /Plans/
 /Reports/
+/ImageContext/
