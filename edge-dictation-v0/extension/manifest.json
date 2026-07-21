@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Edge Dictation (Local)",
+  "version": "0.1.0",
+  "description": "A thin Chrome client for a local, clinician-reviewed dictation service.",
+  "permissions": ["nativeMessaging", "activeTab", "storage", "scripting"],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Toggle local dictation"
+  },
+  "commands": {
+    "toggle-dictation": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+M",
+        "mac": "MacCtrl+Shift+M"
+      },
+      "description": "Toggle local dictation"
+    }
+  },
+  "host_permissions": []
+}

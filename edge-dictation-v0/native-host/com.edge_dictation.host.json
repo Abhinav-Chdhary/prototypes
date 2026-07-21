@@ -1,0 +1,9 @@
+{
+  "name": "com.edge_dictation.host",
+  "description": "Edge Dictation v0 native messaging host",
+  "path": "/REPLACE/WITH/ABSOLUTE/PATH/TO/edge-dictation-host",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://REPLACE_WITH_LOADED_EXTENSION_ID/"
+  ]
+}
